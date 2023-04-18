@@ -1,0 +1,28 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Company {
+  children: [Company!]
+  cost: Float!
+  createdAt: String!
+  id: String!
+  name: String!
+  parentId: String!
+  travels: [Travel!]
+}
+
+type Query {
+  companies: [Company!]!
+  company(id: String!): Company!
+}
+
+type Travel {
+  companyId: String!
+  createdAt: String!
+  departure: String!
+  destination: String!
+  employeeName: String!
+  id: String!
+  price: String!
+}
