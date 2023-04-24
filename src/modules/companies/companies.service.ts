@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Company } from './entities/company.entity';
+import Bignumber from 'bignumber.js';
 import * as companiesMocks from '../../mocks/companies.json';
 import * as travelsMocks from '../../mocks/travels.json';
 
@@ -19,6 +20,19 @@ export class CompaniesService {
     return this.companies.find((company) => company.id === id);
   }
 
+  calcCostCompany(company: Company): void {
+    if (company.children?.length) {
+      company.children.map((c) => this.calcCostCompany(c));
+    }
+    const costCurrentCompany =
+      company.travels?.reduce((a, b) => a.plus(b.price), Bignumber(0)) ??
+      Bignumber(0);
+    const costChildrenCompany =
+      company.children?.reduce((a, b) => a.plus(b.cost), Bignumber(0)) ??
+      Bignumber(0);
+    company.cost = costCurrentCompany.plus(costChildrenCompany).toFixed();
+  }
+
   private mapDataMock() {
     const companies: Company[] = companiesMocks;
     // map travel to company
@@ -33,13 +47,12 @@ export class CompaniesService {
 
     // map company to company and caculate travel cost
     for (const child of companies) {
-      child.cost = child.travels.reduce((a, b) => a + Number(b.price), 0);
       const parent = companies.find((comp) => comp.id === child.parentId);
       if (!parent) continue;
       parent.children = parent.children ?? [];
       parent.children.push(child);
     }
-
+    this.calcCostCompany(companies[0]);
     return companies;
   }
 }

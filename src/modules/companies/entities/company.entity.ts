@@ -22,5 +22,5 @@ export class Company {
   travels?: Travel[];
 
   @Field(() => Float)
-  cost?: number;
+  cost?: string;
 }
